@@ -3,7 +3,8 @@ import datetime
 from ..settings import ThemeManager
 from ..core.task_manager import TaskManager, Task, Priority  # Ensure this is imported correctly
 from .customWidgets.circularCheck import CircularCheckBox
-from .customWidgets.TaskDialog import AddTaskDialog
+from .customWidgets.roundPanel import RoundPanel
+from src.gui.dialogs.TaskDialog import AddTaskDialog
 
 class TodoPanel(wx.Panel):
     def __init__(self, parent, themeManager: ThemeManager, task_manager: TaskManager, *args, **kwds):
@@ -74,6 +75,7 @@ class TodoPanel(wx.Panel):
         Display a task in the task list with priority-indicated colors.
         """
         task_panel = wx.Panel(self)
+        # task_panel.SetBackgroundColour(Priority.get_priority_color(task.priority))
         task_panel.SetBackgroundColour(self.themeManager.get_color('bg'))
         task_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -81,7 +83,7 @@ class TodoPanel(wx.Panel):
         check = CircularCheckBox(task_panel, radius=12, check_proportion=0.6,
                                  bg_color=self.themeManager.get_color('bg'),
                                  inner_bg_color=self.themeManager.get_color('bg'),
-                                 check_color=self.themeManager.get_color('check2'))
+                                 check_color=self.themeManager.get_color('check1'))
         task_sizer.Add(check, 0, wx.ALL | wx.CENTER, 5)
 
         # Track the checkbox with the associated task
@@ -89,11 +91,15 @@ class TodoPanel(wx.Panel):
 
         # Task Label with Priority Color
         task_color = Priority.get_priority_color(task.priority)
-        task_label_panel = wx.Panel(task_panel)
-        task_label_panel.SetBackgroundColour(task_color)
+        task_label_panel = RoundPanel(task_panel, radius=10,
+                                bg_color=self.themeManager.get_color('bg'),
+                                inner_bg_color=task_color,
+                                border=0)
+        # task_label_panel.SetBackgroundColour(task_color)
 
         task_label_sizer = wx.BoxSizer(wx.HORIZONTAL)
         task_label = wx.StaticText(task_label_panel, label=task.name)
+        task_label.SetBackgroundColour(task_color)
         task_label.SetFont(self.themeManager.get_font('body'))
         task_label_sizer.Add(task_label, 1, wx.ALL | wx.CENTER, 10)
 

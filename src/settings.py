@@ -25,7 +25,7 @@ class ThemeManager:
             'button1': ("#E0DCDB", (100, 200, 100)),
             'button2': ("#E8E5E3", (100, 200, 100)),
             'text1': ((0, 0, 0), (255, 255, 255)),  # Black text / White text
-            'check1': ("#DAFF9A", "#000000"),
+            'check1': ("#3FA7D6", "#000000"),
             'check2': ("#E8CEFF", "#000000"),
         }
 

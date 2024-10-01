@@ -19,11 +19,11 @@ class Priority(Enum):
         Get the background color based on task priority.
         """
         priority_colors = {
-            Priority.LOW: '#E0E5EC',
-            Priority.MEDIUM: '#FFD580',
-            Priority.HIGH: '#FFB347',
-            Priority.URGENT: '#FF6961',
-            Priority.CRITICAL: '#FF3F3F'
+            Priority.LOW: '#72D5A0',
+            Priority.MEDIUM: '#D1EDB4',
+            Priority.HIGH: '#FAC05E',
+            Priority.URGENT: '#F9B39F',
+            Priority.CRITICAL: '#F49B90'
         }
         return priority_colors.get(priority, '#FFFFFF')
 
