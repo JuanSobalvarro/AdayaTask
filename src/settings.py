@@ -3,7 +3,7 @@ import wx
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DB_PATH = os.path.join(BASE_DIR, 'db', 'tasks.db')
+TASKS_PATH = os.path.join(BASE_DIR, 'tasks', 'tasks.yaml')
 
 ICON_PATH = os.path.join(BASE_DIR, 'assets', 'icons', 'adayacropped.ico')
 
@@ -20,11 +20,13 @@ class ThemeManager:
         # Theme palette
         self.PALETTE = {
             'bg': ("#F7ECEB", "#"),  # White / Dark
-            'primary': ("#FFBFBC", "#"),
+            'primary': ("#FFBBC8", "#"),
             'secondary': ("FADEDC", (10, 10, 10)),  # Light gray / Dark gray
             'button1': ("#E0DCDB", (100, 200, 100)),
             'button2': ("#E8E5E3", (100, 200, 100)),
-            'text1': ((0, 0, 0), (255, 255, 255))  # Black text / White text
+            'text1': ((0, 0, 0), (255, 255, 255)),  # Black text / White text
+            'check1': ("#DAFF9A", "#000000"),
+            'check2': ("#E8CEFF", "#000000"),
         }
 
         # Fonts based on the theme

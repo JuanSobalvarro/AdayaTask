@@ -13,13 +13,13 @@ class AdayaTaskApp(wx.App):
         self.__initialize()
 
     def __initialize(self):
-        task_manager = core.task_manager.TaskManager(settings.DB_PATH)
+        task_manager = core.task_manager.TaskManager(settings.TASKS_PATH)
 
         if self.debug:
             print("Debug mode is ON")
             # Add any additional logging or debug-related behavior here
 
-        main_window = gui.main_window.MainWindow(None, title='Adaya Task')
+        main_window = gui.main_window.MainWindow(parent=None, task_manager=task_manager, title='Adaya Task')
         main_window.Show()
         return True
 

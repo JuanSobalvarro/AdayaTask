@@ -1,6 +1,7 @@
 import datetime
-from peewee import Model, CharField, IntegerField, DateTimeField, SqliteDatabase
 from enum import Enum
+import yaml
+import os
 from .. import settings
 
 
@@ -12,92 +13,111 @@ class Priority(Enum):
     URGENT = 3
     CRITICAL = 4
 
+    @staticmethod
+    def get_priority_color(priority):
+        """
+        Get the background color based on task priority.
+        """
+        priority_colors = {
+            Priority.LOW: '#E0E5EC',
+            Priority.MEDIUM: '#FFD580',
+            Priority.HIGH: '#FFB347',
+            Priority.URGENT: '#FF6961',
+            Priority.CRITICAL: '#FF3F3F'
+        }
+        return priority_colors.get(priority, '#FFFFFF')
 
-# Initialize the SQLite database connection
-db = SqliteDatabase(settings.DB_PATH)
 
+class Task:
+    def __init__(self, name: str, priority: Priority, description: str, due_datetime: datetime.datetime):
+        self.name = name
+        self.priority = priority
+        self.description = description
+        self.due_datetime = due_datetime
 
-# Define the Task model using Peewee
-class Task(Model):
-    name = CharField()
-    description = CharField(null=True)
-    priority = IntegerField()
-    due_datetime = DateTimeField()
+    def to_dict(self):
+        """
+        Convert Task object to a dictionary for YAML serialization
+        """
+        return {
+            'name': self.name,
+            'priority': self.priority.name,  # Save the name of the priority (e.g., 'HIGH')
+            'description': self.description,
+            'due_datetime': self.due_datetime.isoformat()
+        }
 
-    class Meta:
-        database = db  # Link to the tasks.db database
+    @staticmethod
+    def from_dict(data):
+        """
+        Create Task object from dictionary data
+        """
+        return Task(
+            name=data['name'],
+            priority=Priority[data['priority']],  # Convert priority name back to enum
+            description=data['description'],
+            due_datetime=datetime.datetime.fromisoformat(data['due_datetime'])  # Convert string back to datetime
+        )
 
 
 class TaskManager:
-    def __init__(self, db_path):
+    def __init__(self, path_tasks=os.path.join(settings.BASE_DIR, 'tasks', 'tasks.yaml')):
         """
-        Initialize TaskManager and create the tasks table.
+        Initialize TaskManager and load tasks from YAML file.
         """
-        self.db = SqliteDatabase(db_path)
-        self.connect_db()
-        db.create_tables([Task])
+        self.path_tasks = path_tasks
+        self.tasks = []
 
-    def connect_db(self):
-        if not self.db.is_closed():
-            print("Database connection is already open.")
-        else:
-            self.db.connect()
+        # Load tasks from YAML file on initialization
+        self.__load_tasks()
 
-    def close_db(self):
-        if not self.db.is_closed():
-            self.db.close()
+    def get_tasks(self) -> list[Task]:
+        """
+        Returns a list of tasks
+        """
+        return self.tasks
 
-    def add_task(self, name: str, description: str, priority: Priority, due_datetime: datetime.datetime):
+    def add_task(self, task: Task):
         """
-        Add a new task to the database.
-        :param name: Task name
-        :param description: Task description
-        :param priority: Task priority as Priority enum
-        :param due_datetime: Due date and time
+        Add a task to the task list and save the updated list to YAML file
         """
-        Task.create(
-            name=name,
-            description=description,
-            priority=priority.value,
-            due_datetime=due_datetime
-        )
+        self.tasks.append(task)
+        self.__save_tasks()
 
-    def get_tasks(self):
+    def update_tasks(self):
         """
-        Retrieve all tasks from the database.
-        :return: List of Task objects
+        Update the tasks by saving the current task list to the YAML file.
         """
-        return list(Task.select())
+        self.__save_tasks()
 
-    def update_task(self, task_id: int, name: str = None, description: str = None,
-                    priority: Priority = None, due_datetime: datetime.datetime = None):
+    def remove_task(self, task: Task):
         """
-        Update an existing task in the database.
-        :param task_id: ID of the task to update
-        :param name: New task name (optional)
-        :param description: New task description (optional)
-        :param priority: New task priority (optional)
-        :param due_datetime: New task due datetime (optional)
+        Remove a task from the task list and save the updated list to YAML file
         """
-        task = Task.get(Task.id == task_id)
-        if name:
-            task.name = name
-        if description:
-            task.description = description
-        if priority:
-            task.priority = priority.value
-        if due_datetime:
-            task.due_datetime = due_datetime
-        task.save()
+        if task in self.tasks:
+            self.tasks.remove(task)
+        self.__save_tasks()
 
-    def delete_task(self, task_id: int):
+    def __load_tasks(self):
         """
-        Delete a task from the database.
-        :param task_id: ID of the task to delete
+        Load the tasks from the YAML file into the tasks list.
         """
-        task = Task.get(Task.id == task_id)
-        task.delete_instance()
+        if os.path.exists(self.path_tasks):
+            with open(self.path_tasks, 'r') as file:
+                tasks_data = yaml.load(file, Loader=yaml.SafeLoader)
+                if tasks_data:
+                    self.tasks = [Task.from_dict(task) for task in tasks_data]
 
-    def __del__(self):
-        """Ensure the database connection is closed when the instance is destroyed."""
-        self.close_db()
+    def __save_tasks(self):
+        """
+        Save the current list of tasks to the YAML file.
+        """
+        with open(self.path_tasks, 'w') as file:
+            yaml.dump([task.to_dict() for task in self.tasks], file)
+
+    def clear_tasks(self):
+        """
+        Clear the tasks list and delete the tasks from the YAML file.
+        """
+        self.tasks = []
+        with open(self.path_tasks, 'w') as file:
+            file.truncate(0)  # Clear the file content

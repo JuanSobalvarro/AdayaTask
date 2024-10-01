@@ -4,17 +4,19 @@ from .. import settings
 from . import todo_panel as todo
 from . import menu_panel as menu
 from . import configuration_panel as configuration
+from ..core.task_manager import TaskManager
 
 
 class MainWindow(wx.Frame):
-    def __init__(self, *args, **kwds):
+    def __init__(self, task_manager: TaskManager, *args, **kwds):
         super().__init__(*args, **kwds)
-        self.SetSize(720, 480)
+        self.SetSize(480, 480)
         self.SetIcon(wx.Icon(settings.ICON_PATH))
         # self.SetBackgroundColour(wx.BLACK)
         self.current_panel = None
 
         self.themeManager = settings.ThemeManager()
+        self.taskManager = task_manager
 
         # Call to the function which shows the menu Panel
         self.showMenuPanel()
@@ -26,7 +28,7 @@ class MainWindow(wx.Frame):
         self.switchPanel(panel)
 
     def showTodoPanel(self):
-        panel = todo.TodoPanel(self, self.themeManager)
+        panel = todo.TodoPanel(self, self.themeManager, self.taskManager)
         self.switchPanel(panel)
 
     def showSettingsPanel(self):
