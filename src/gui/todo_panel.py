@@ -1,10 +1,13 @@
 import wx
 import datetime
+
 from ..core.theme_manager import ThemeManager
 from ..core.task_manager import TaskManager, Task, Priority  # Ensure this is imported correctly
 from .customWidgets.circularCheck import CircularCheckBox
 from .customWidgets.roundPanel import RoundPanel
 from .dialogs.addTaskdialog import AddTaskDialog
+from .dialogs.editTaskDialog import EditTaskDialog
+from .dialogs.detailTaskDialog import DetailTaskDialog
 
 class TodoPanel(wx.Panel):
     def __init__(self, parent, themeManager: ThemeManager, taskManager: TaskManager, *args, **kwds):
@@ -111,27 +114,27 @@ class TodoPanel(wx.Panel):
         edit_button.SetBackgroundColour(self.themeManager.get_color('button1'))
         edit_button.SetForegroundColour(self.themeManager.get_color('text1'))
         edit_button.SetFont(self.themeManager.get_font('button'))
-        edit_button.Bind(wx.EVT_BUTTON, lambda evt, t=task: self.__edit_task(evt, t))
 
         task_sizer.Add(edit_button, 0, wx.ALL | wx.CENTER, 5)
 
         task_panel.SetSizer(task_sizer)
         self.task_sizer.Add(task_panel, 0, wx.EXPAND | wx.ALL, 5)
 
+        # Bind events
+        self.__bind_click_recursive(task_label_panel, task)
+        edit_button.Bind(wx.EVT_BUTTON, lambda evt, t=task: self.__on_edit_task(evt, t))
+
         self.Layout()
 
-    def __on_add_task(self, event):
+    def __bind_click_recursive(self, widget, task):
         """
-        Handler for adding a new task.
+        Recursively binds a click event to the widget and all its children.
+        This ensures the task panel responds to clicks even on its child widgets.
         """
-        dialog = AddTaskDialog(parent=self, theme_manager=self.themeManager)
-        new_task = dialog.create_task()
+        widget.Bind(wx.EVT_LEFT_UP, lambda event: self.__on_task_details(task))
 
-        if new_task is not None:
-            self.taskManager.add_task(new_task)
-            self.__load_tasks()
-
-        self.__loadAll()
+        for child in widget.GetChildren():
+            self.__bind_click_recursive(child, task)
 
     def __on_clean_selected(self, event):
         """Handler for cleaning all selected tasks."""
@@ -146,11 +149,34 @@ class TodoPanel(wx.Panel):
         self.__load_tasks()
         self.__add_task_buttons()
 
-    def __edit_task(self, event, task):
-        """Edit an existing task."""
-        # Example edit logic: open a dialog to edit the task (not implemented)
-        wx.MessageBox(f"Edit task: {task.name}", "Edit Task", wx.OK | wx.ICON_INFORMATION)
-        # After editing, update the task in the task manager and refresh the display
-        # self.task_manager.update_task(task)
-        # self.task_manager.save_tasks()
-        # self.load_tasks()  # Reload all tasks to reflect changes
+    def __on_task_details(self, task):
+        """
+        Show the TaskDetailDialog when the task panel is clicked.
+        """
+        dialog = DetailTaskDialog(task, self.themeManager, parent=self)
+        dialog.ShowModal()
+        dialog.Destroy()
+
+    def __on_add_task(self, event):
+        """
+        Handler for adding a new task.
+        """
+        dialog = AddTaskDialog(parent=self, theme_manager=self.themeManager)
+        new_task = dialog.create_task()
+
+        if new_task is not None:
+            self.taskManager.add_task(new_task)
+
+        self.__loadAll()
+
+    def __on_edit_task(self, event, task):
+        """
+        Handler for edit an existing task.
+        """
+        dialog = EditTaskDialog(parent=self, theme_manager=self.themeManager, task=task)
+        updated_task = dialog.update_task()
+
+        if updated_task is not None:
+            self.taskManager.update_tasks()
+
+        self.__loadAll()

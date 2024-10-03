@@ -38,7 +38,7 @@ class AddTaskDialog(wx.Dialog):
         sizer.Add(wx.StaticText(self, label="Priority:"), 0, wx.ALL, 5)
         sizer.Add(self.priority_choice, 0, wx.ALL | wx.EXPAND, 5)
 
-        # Due date
+        # Due date and due time
         self.due_date = wx.adv.DatePickerCtrl(self)
         self.due_time = wx.adv.TimePickerCtrl(self)
         sizer.Add(wx.StaticText(self, label="Due Date:"), 0, wx.ALL, 5)
@@ -63,9 +63,14 @@ class AddTaskDialog(wx.Dialog):
         if self.ShowModal() == wx.ID_OK:
             name = self.task_name.GetValue()
             description = self.task_description.GetValue()
-            priority = Priority(self.priority_choice.GetSelection())  # Assuming selections correspond to enum
-            wx_datetime = self.due_date.GetValue()
-            py_datetime = datetime.datetime(wx_datetime.year, wx_datetime.month, wx_datetime.day)
+            priority = Priority(self.priority_choice.GetSelection())
+            wx_date = self.due_date.GetValue()
+            wx_time = self.due_time.GetValue()
+
+            py_datetime = datetime.datetime(
+                wx_date.year, wx_date.month + 1, wx_date.day,  # wx.DateTime uses 0-indexed months
+                wx_time.GetHour(), wx_time.GetMinute(), wx_time.GetSecond()
+            )
 
             new_task = Task(name=name, priority=priority, description=description, due_datetime=py_datetime)
 
