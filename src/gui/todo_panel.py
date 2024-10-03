@@ -1,10 +1,10 @@
 import wx
 import datetime
-from ..settings import ThemeManager
+from ..core.theme_manager import ThemeManager
 from ..core.task_manager import TaskManager, Task, Priority  # Ensure this is imported correctly
 from .customWidgets.circularCheck import CircularCheckBox
 from .customWidgets.roundPanel import RoundPanel
-from src.gui.dialogs.TaskDialog import AddTaskDialog
+from .dialogs.TaskDialog import AddTaskDialog
 
 class TodoPanel(wx.Panel):
     def __init__(self, parent, themeManager: ThemeManager, task_manager: TaskManager, *args, **kwds):
@@ -122,7 +122,7 @@ class TodoPanel(wx.Panel):
 
     def __on_add_task(self, event):
         """Handler for adding a new task."""
-        dialog = AddTaskDialog(self, title="Add New Task")
+        dialog = AddTaskDialog(self)
         if dialog.ShowModal() == wx.ID_OK:
             name = dialog.task_name.GetValue()
             description = dialog.task_description.GetValue()

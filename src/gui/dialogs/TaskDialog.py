@@ -1,14 +1,22 @@
 import wx
 import wx.adv
 from ...core.task_manager import Priority
+from ...core.theme_manager import ThemeManager
 
 
 class AddTaskDialog(wx.Dialog):
-    """Dialog for adding a new task."""
-    def __init__(self, *args, **kwds):
+    """
+    Dialog for adding a new task.
+    """
+    def __init__(self, theme_manager: ThemeManager, *args, **kwds):
         super().__init__(*args, **kwds)
 
+        self.themeManager = theme_manager
+
+        self.SetTitle("Add Task")
         self.SetSize(400, 300)
+        self.SetBackgroundColour(self.themeManager.get_color('bg'))
+
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         # Task name input

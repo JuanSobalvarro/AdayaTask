@@ -1,3 +1,3 @@
-__all__ = ["task_manager"]
+__all__ = ["task_manager", "theme_manager"]
 
-from . import task_manager
+from . import task_manager, theme_manager
