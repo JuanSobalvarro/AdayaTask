@@ -4,14 +4,14 @@ from ..core.theme_manager import ThemeManager
 from ..core.task_manager import TaskManager, Task, Priority  # Ensure this is imported correctly
 from .customWidgets.circularCheck import CircularCheckBox
 from .customWidgets.roundPanel import RoundPanel
-from .dialogs.TaskDialog import AddTaskDialog
+from .dialogs.addTaskdialog import AddTaskDialog
 
 class TodoPanel(wx.Panel):
-    def __init__(self, parent, themeManager: ThemeManager, task_manager: TaskManager, *args, **kwds):
+    def __init__(self, parent, themeManager: ThemeManager, taskManager: TaskManager, *args, **kwds):
         super().__init__(parent, *args, **kwds)
 
         self.themeManager: ThemeManager = themeManager
-        self.task_manager: TaskManager = task_manager  # Now receive TaskManager from MainWindow
+        self.taskManager: TaskManager = taskManager  # Now receive TaskManager from MainWindow
 
         self.SetBackgroundColour(self.themeManager.get_color('bg'))
 
@@ -65,7 +65,7 @@ class TodoPanel(wx.Panel):
         self.task_checkboxes.clear()  # Clear the checkboxes list
 
         # Fetch all tasks from the task manager and display them
-        for task in self.task_manager.tasks:
+        for task in self.taskManager.tasks:
             self.__display_task(task)
 
         self.Layout()
@@ -121,20 +121,16 @@ class TodoPanel(wx.Panel):
         self.Layout()
 
     def __on_add_task(self, event):
-        """Handler for adding a new task."""
-        dialog = AddTaskDialog(self)
-        if dialog.ShowModal() == wx.ID_OK:
-            name = dialog.task_name.GetValue()
-            description = dialog.task_description.GetValue()
-            priority = Priority(dialog.priority_choice.GetSelection())  # Assuming selections correspond to enum
-            wx_datetime = dialog.due_date.GetValue()
-            py_datetime = datetime.datetime(wx_datetime.year, wx_datetime.month, wx_datetime.day)
+        """
+        Handler for adding a new task.
+        """
+        dialog = AddTaskDialog(parent=self, theme_manager=self.themeManager)
+        new_task = dialog.create_task()
 
-            new_task = Task(name=name, priority=priority, description=description, due_datetime=py_datetime)
-            self.task_manager.add_task(new_task)
-            self.__load_tasks()  # Reload the tasks to include the new task
+        if new_task is not None:
+            self.taskManager.add_task(new_task)
+            self.__load_tasks()
 
-        dialog.Destroy()
         self.__loadAll()
 
     def __on_clean_selected(self, event):
@@ -144,7 +140,7 @@ class TodoPanel(wx.Panel):
 
         # Remove the selected tasks from the task manager
         for task in tasks_to_remove:
-            self.task_manager.remove_task(task)
+            self.taskManager.remove_task(task)
 
         # Reload the tasks
         self.__load_tasks()
