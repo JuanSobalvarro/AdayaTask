@@ -7,13 +7,13 @@
 -[ ] Ensure the settings are persistent between sessions using a file (e.g., YAML or JSON). 
 
 ## Add Task Frame
--[ ] Redesign the "Add Task" frame for better usability.
--[ ] Include fields for task name, description, priority, and due date.
--[ ] Improve the layout to handle larger inputs for descriptions and multiline text.
+-[x] Redesign the "Add Task" frame for better usability.
+-[x] Include fields for task name, description, priority, and due date.
+-[x] Improve the layout to handle larger inputs for descriptions and multiline text.
 
 ## Edit Task Feature
--[ ] Implement a dialog for editing tasks with similar functionality as the "Add Task" frame.
--[ ] Allow users to modify task attributes such as name, description, priority, and due date.
+-[x] Implement a dialog for editing tasks with similar functionality as the "Add Task" frame.
+-[x] Allow users to modify task attributes such as name, description, priority, and due date.
 -[ ] Task Filtering & Sorting
 
 ## Tasks
@@ -36,3 +36,6 @@
 
 ## Notifications/Reminders
 -[ ] Add functionality to notify users of upcoming due dates for tasks.
+
+## Deployment
+-[ ] Deployment of adayatask as a .exe
