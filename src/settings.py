@@ -1,12 +1,14 @@
-import os
-import wx
+# settings.py
+from .helpers.paths import *
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# TASKS_PATH resolves to 'tasks/tasks.yaml'
+TASKS_PATH = get_tasks_path()
 
-TASKS_PATH = os.path.join(BASE_DIR, 'tasks', 'tasks.yaml')
+# ICON_PATH resolves to 'assets/icons/adayacropped.ico'
+ICON_PATH = get_icon_path()
 
-ICON_PATH = os.path.join(BASE_DIR, 'assets', 'icons', 'adayacropped.ico')
+# IMAGES_PATH resolves to the 'assets/images' directory
+IMAGES_PATH = get_images_path()
 
-IMAGES_PATH = os.path.join(BASE_DIR, 'assets', 'images')
-
+# Default Theme
 DEFAULT_THEME = 0

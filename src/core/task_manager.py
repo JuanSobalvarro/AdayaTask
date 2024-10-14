@@ -60,7 +60,7 @@ class Task:
 
 
 class TaskManager:
-    def __init__(self, path_tasks=os.path.join(settings.BASE_DIR, 'tasks', 'tasks.yaml')):
+    def __init__(self, path_tasks=settings.TASKS_PATH):
         """
         Initialize TaskManager and load tasks from YAML file.
         """

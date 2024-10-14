@@ -33,7 +33,7 @@ LicenseFile=D:\Programacion\projects\AdayaTask\LICENSE
 InfoBeforeFile=D:\Programacion\projects\AdayaTask\README.md
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputBaseFilename=mysetup
+OutputBaseFilename=adaya-setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
