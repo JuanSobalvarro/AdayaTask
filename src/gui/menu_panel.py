@@ -1,15 +1,15 @@
 import wx
 import os
+
+from .customWidgets.basePanel import BasePanel
 from .. import settings
 
 
-class MenuPanel(wx.Panel):
-    def __init__(self, parent, themeManager):
-        super().__init__(parent)
+class MenuPanel(BasePanel):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
 
         self.parent = parent
-
-        self.themeManager = themeManager
 
         # Create a vertical box sizer to arrange elements vertically
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -52,7 +52,7 @@ class MenuPanel(wx.Panel):
 
     def __addAdayaImage(self):
         # Add the Adaya image to the panel
-        adaya_image_path = os.path.join(settings.IMAGES_PATH, 'adayacropped.png')
+        adaya_image_path = os.path.join(settings.load_settings()['images_path'], 'adayacropped.png')
         if os.path.exists(adaya_image_path):
             image = wx.Image(adaya_image_path, wx.BITMAP_TYPE_ANY)
             image = image.Scale(200, 200, wx.IMAGE_QUALITY_HIGH)

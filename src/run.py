@@ -13,7 +13,7 @@ class AdayaTaskApp(wx.App):
         self.__initialize()
 
     def __initialize(self):
-        task_manager = core.task_manager.TaskManager(settings.TASKS_PATH)
+        task_manager = core.task_manager.TaskManager(settings.load_settings()['tasks_path'])
         theme_manager = core.theme_manager.ThemeManager()
 
         if self.debug:

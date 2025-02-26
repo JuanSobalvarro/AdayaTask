@@ -7,3 +7,5 @@ just add your task, add priorities, descriptions and due dates.
 This is a python project inspire in my problems handling my itinerary.
 
 If you want to create a modded version, this is free-source, so be free.
+
+This project uses a MVVM architecture, and a SQLite database to store the tasks.

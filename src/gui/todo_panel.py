@@ -5,16 +5,14 @@ from ..core.theme_manager import ThemeManager
 from ..core.task_manager import TaskManager, Task, Priority  # Ensure this is imported correctly
 from .customWidgets.circularCheck import CircularCheckBox
 from .customWidgets.roundPanel import RoundPanel
+from .customWidgets.basePanel import BasePanel
 from .dialogs.addTaskdialog import AddTaskDialog
 from .dialogs.editTaskDialog import EditTaskDialog
 from .dialogs.detailTaskDialog import DetailTaskDialog
 
-class TodoPanel(wx.Panel):
-    def __init__(self, parent, themeManager: ThemeManager, taskManager: TaskManager, *args, **kwds):
+class TodoPanel(BasePanel):
+    def __init__(self, parent, *args, **kwds):
         super().__init__(parent, *args, **kwds)
-
-        self.themeManager: ThemeManager = themeManager
-        self.taskManager: TaskManager = taskManager  # Now receive TaskManager from MainWindow
 
         self.SetBackgroundColour(self.themeManager.get_color('bg'))
 
@@ -39,13 +37,21 @@ class TodoPanel(wx.Panel):
         # Sizer to hold the buttons at the bottom of the panel
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
+        # Back Button
+        self.back_button = wx.Button(self, label="Back")
+        self.back_button.SetBackgroundColour(self.themeManager.get_color('button1'))
+        self.back_button.SetForegroundColour(self.themeManager.get_color('text1'))
+        self.back_button.SetFont(self.themeManager.get_font('button'))
+        self.back_button.Bind(wx.EVT_BUTTON, self.on_back)
+        button_sizer.Add(self.back_button, 0, wx.ALL | wx.ALIGN_LEFT, 10)  # Align to the left
+
         # Add Task Button
         self.add_task_button = wx.Button(self, label="Add Task")
         self.add_task_button.SetBackgroundColour(self.themeManager.get_color('button1'))
         self.add_task_button.SetForegroundColour(self.themeManager.get_color('text1'))
         self.add_task_button.SetFont(self.themeManager.get_font('button'))
         self.add_task_button.Bind(wx.EVT_BUTTON, self.__on_add_task)
-        button_sizer.Add(self.add_task_button, 0, wx.ALL | wx.CENTER, 10)
+        button_sizer.Add(self.add_task_button, 0, wx.ALL | wx.ALIGN_LEFT, 10)
 
         # Clean Selected Button
         self.clean_selected_button = wx.Button(self, label="Clean Selected")
@@ -53,12 +59,17 @@ class TodoPanel(wx.Panel):
         self.clean_selected_button.SetForegroundColour(self.themeManager.get_color('text1'))
         self.clean_selected_button.SetFont(self.themeManager.get_font('button'))
         self.clean_selected_button.Bind(wx.EVT_BUTTON, self.__on_clean_selected)
-        button_sizer.Add(self.clean_selected_button, 0, wx.ALL | wx.CENTER, 10)
+        button_sizer.Add(self.clean_selected_button, 0, wx.ALL | wx.ALIGN_LEFT, 10)
 
         # Add the button sizer to the main panel
-        self.task_sizer.Add(button_sizer, 0, wx.ALIGN_CENTER | wx.BOTTOM, 10)
+        self.task_sizer.Add(button_sizer, 0, wx.ALIGN_LEFT | wx.BOTTOM, 10)
 
+        # Adjust layout
         self.Layout()
+
+    def on_back(self, event):
+        """Method to handle back navigation."""
+        self.Parent.navigateBack()  # Call navigateBack from MainWindow
 
     def __load_tasks(self):
         """
